@@ -23,22 +23,54 @@ struct Meme: Codable, Identifiable {
 }
 
 
+struct MemeDetailView: View {
+    let meme: Meme
+    
+    var body: some View {
+        VStack {
+            Text(meme.name)
+                .font(.title)
+                .padding()
+            
+            AsyncImage(url: URL(string: meme.url)) { image in
+                image
+                    .resizable()
+                    .scaledToFit()
+            } placeholder: {
+                ProgressView()
+            }
+        }
+        .padding()
+    }
+}
+
+
 struct ContentView: View {
     
     @State private var memes: [Meme] = []
-    @State private var errorMessage: String?
+    @State private var showError = false
+    @State private var errorMessage = ""
     
     var body: some View {
         NavigationView {
             List(memes) { meme in
-                VStack(alignment: .leading) {
-                    Text(meme.name)
-                    Text(meme.url).font(.caption)
+                
+                // 👇 CLICKABLE ROW
+                NavigationLink(destination: MemeDetailView(meme: meme)) {
+                    VStack(alignment: .leading) {
+                        Text(meme.name)
+                            .font(.headline)
+                    }
                 }
             }
             .navigationTitle("Memes")
             .onAppear {
                 loadData()
+            }
+            .alert("Error", isPresented: $showError) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text(errorMessage)
             }
         }
     }
@@ -58,6 +90,7 @@ struct ContentView: View {
                 } catch {
                     DispatchQueue.main.async {
                         self.errorMessage = "Failed to decode data"
+                        self.showError = true
                     }
                 }
             }
