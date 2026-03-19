@@ -7,18 +7,27 @@
 
 import SwiftUI
 
-struct ContentView: View {
-    var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
-        }
-        .padding()
-    }
+
+struct MemeResponse: Codable {
+    let data: MemeData
 }
 
+struct MemeData: Codable {
+    let memes: [Meme]
+}
+
+struct Meme: Codable, Identifiable {
+    let id: String
+    let name: String
+    let url: String
+}
+
+
+struct ContentView: View {
+    var body: some View {
+        Text("Hello World")
+    }
+}
 #Preview {
     ContentView()
 }
